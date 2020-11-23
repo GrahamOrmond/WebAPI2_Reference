@@ -17,12 +17,28 @@ namespace WebAPI2_Reference.API.DAO
 
         public IQueryable<BookDTO> GetAllBooks()
         {
-            throw new NotImplementedException();
+            return from b in _db.Books
+                   select new BookDTO()
+                   {
+                       Id = b.Id,
+                       Title = b.Title,
+                       AuthorName = b.Author.Name,
+                   };
         }
 
-        public BookDetailDTO GetBook(int id)
+        public async Task<BookDetailDTO> GetBookAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _db.Books.Select(b =>
+                new BookDetailDTO()
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Year = b.Year,
+                    Price = b.Price,
+                    AuthorName = b.Author.Name,
+                    Genre = b.Genre
+                }).SingleOrDefaultAsync(b => b.Id == id);
+
         }
 
         internal void Dispose()
