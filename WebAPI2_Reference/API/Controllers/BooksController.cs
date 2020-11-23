@@ -24,7 +24,7 @@ namespace WebAPI2_Reference.API.Controllers
         [ResponseType(typeof(BookDetailDTO))]
         public async Task<IHttpActionResult> GetBook(int Id)
         {
-            BookDetailDTO book = await _bookDAO.GetBook(Id);
+            BookDetailDTO book = await _bookDAO.GetBookAsync(Id);
             if (book == null)
                 return NotFound();
 

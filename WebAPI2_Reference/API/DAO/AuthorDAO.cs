@@ -15,12 +15,23 @@ namespace WebAPI2_Reference.API.DAO
 
         public IQueryable<AuthorDTO> GetAllAuthors()
         {
-            throw new NotImplementedException();
+            return from a in _db.Authors
+                   select new AuthorDTO()
+                   {
+                       Id = a.Id,
+                       Name = a.Name,
+                   };
         }
 
         public AuthorDTO GetAuthor(int id)
         {
-            throw new NotImplementedException();
+            return _db.Authors
+                .Select(a =>
+                new AuthorDTO()
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                }).SingleOrDefault(a => a.Id == id);
         }
 
         internal void Dispose()
