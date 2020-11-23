@@ -8,7 +8,6 @@ namespace WebAPI2_Reference.API.DTO
         public IEnumerable<BookDTO> Books { get; set; }
     }
 
-  
     public class BookDTO
     {
         public int Id { get; set; }

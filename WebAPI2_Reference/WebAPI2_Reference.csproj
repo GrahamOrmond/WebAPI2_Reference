@@ -180,6 +180,8 @@
     <Compile Include="API\Controllers\AccountController.cs" />
     <Compile Include="API\Controllers\AuthorsController.cs" />
     <Compile Include="API\Controllers\BooksController.cs" />
+    <Compile Include="API\DAO\AuthorDAO.cs" />
+    <Compile Include="API\DAO\BookDAO.cs" />
     <Compile Include="API\DAO\RefreshTokenDAO.cs" />
     <Compile Include="API\DTO\AuthorDTO.cs" />
     <Compile Include="API\DTO\BookDTO.cs" />
