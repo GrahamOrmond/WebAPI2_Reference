@@ -4,6 +4,8 @@ using System.Data.Entity;
 using WebAPI2_Reference.API.DTO;
 using WebAPI2_Reference.Models;
 using System;
+using WebAPI2_Reference.Data_Models;
+using System.Data.Entity.Infrastructure;
 
 namespace WebAPI2_Reference.API.DAO
 {
@@ -26,10 +28,10 @@ namespace WebAPI2_Reference.API.DAO
                    };
         }
 
-        public async Task<BookDetailDTO> GetBookAsync(int id)
+        public async Task<BookDetailsDTO> GetBookAsync(int id)
         {
             return await _db.Books.Select(b =>
-                new BookDetailDTO()
+                new BookDetailsDTO()
                 {
                     Id = b.Id,
                     Title = b.Title,
@@ -41,9 +43,26 @@ namespace WebAPI2_Reference.API.DAO
 
         }
 
+        public async Task<BookDetailsDTO> AddBook(BookCreateDTO bookModel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<BookDetailsDTO> UpdateBookAsync(int id, BookUpdateDTO bookUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<BookDetailsDTO> DeleteBookAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         internal void Dispose()
         {
             _db.Dispose();
         }
+
+
     }
 }
