@@ -45,17 +45,96 @@ namespace WebAPI2_Reference.API.DAO
 
         public async Task<BookDetailsDTO> AddBook(BookCreateDTO bookModel)
         {
-            throw new NotImplementedException();
+            // create new book to save
+            Book newBook = new Book()
+            {
+                Title = bookModel.Title,
+                Genre = bookModel.Genre,
+                Year = bookModel.Year,
+                Price = bookModel.Price,
+                AuthorId = bookModel.AuthorId,
+            };
+
+            // save the book to the database
+            _db.Books.Add(newBook);
+            await _db.SaveChangesAsync();
+
+            // load author info and return book details
+            _db.Entry(newBook).Reference(x => x.Author).Load();
+            return new BookDetailsDTO()
+            {
+                Id = newBook.Id,
+                Genre = newBook.Genre,
+                Title = newBook.Title,
+                Year = newBook.Year,
+                Price = newBook.Price,
+                AuthorName = newBook.Author.Name,
+            };
         }
 
         public async Task<BookDetailsDTO> UpdateBookAsync(int id, BookUpdateDTO bookUpdate)
         {
-            throw new NotImplementedException();
+            var book = _db.Books.SingleOrDefault(a => a.Id == id);
+            if (book == null) // author not found
+                return null;
+
+            // update the author
+            book.Title = bookUpdate.Title;
+            book.Price = bookUpdate.Price;
+            book.Year = bookUpdate.Year;
+            book.Genre = bookUpdate.Genre;
+            book.AuthorId = bookUpdate.AuthorId;
+            _db.Entry(book).State = EntityState.Modified;
+
+            try // try to save changes
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException) // failed to save changes
+            {
+                throw;
+            }
+
+            // load author info and return book details
+            _db.Entry(book).Reference(x => x.Author).Load();
+            // return new instance of author details
+            return new BookDetailsDTO()
+            {
+                Id = book.Id,
+                Genre = book.Genre,
+                Title = book.Title,
+                Year = book.Year,
+                Price = book.Price,
+                AuthorName = book.Author.Name,
+            };
         }
 
         public async Task<BookDetailsDTO> DeleteBookAsync(int id)
         {
-            throw new NotImplementedException();
+            Book book = await _db.Books.FindAsync(id);
+            if (book == null) // author not found
+                return null;
+
+            // delete the author from the database
+            _db.Books.Remove(book);
+            await _db.SaveChangesAsync();
+
+            // return details of the author deleted
+            _db.Entry(book).Reference(x => x.Author).Load();
+            return new BookDetailsDTO()
+            {
+                Id = book.Id,
+                Genre = book.Genre,
+                Title = book.Title,
+                Year = book.Year,
+                Price = book.Price,
+                AuthorName = book.Author.Name,
+            };
+        }
+
+        private bool BookExists(int id)
+        {
+            return _db.Books.Count(e => e.Id == id) > 0;
         }
 
         internal void Dispose()
