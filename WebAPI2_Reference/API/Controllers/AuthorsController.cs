@@ -37,7 +37,7 @@ namespace WebAPI2_Reference.API.Controllers
         }
 
         // POST: api/Authors
-        [ResponseType(typeof(Author))]
+        [ResponseType(typeof(AuthorCreateDTO))]
         public async Task<IHttpActionResult> PostAuthor(AuthorCreateDTO authorModel)
         {
             if (!ModelState.IsValid)
