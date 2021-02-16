@@ -7,7 +7,5 @@ https://docs.microsoft.com/en-us/aspnet/web-api/overview/getting-started-with-as
 
 Still missing
 
-  - Rate limiting
-  - Error handling
   - Testing
   - Example C# API calls
