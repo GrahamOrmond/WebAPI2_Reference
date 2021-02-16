@@ -4,79 +4,103 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using WebAPI2_Reference.API.DAO;
 using WebAPI2_Reference.API.DTO;
-using WebAPI2_Reference.Models;using System.Data.Entity;
 using System.Net;
+using WebAPI2_Reference.API.Attributes;
 
 namespace WebAPI2_Reference.API.Controllers
 {
     [Authorize]
+    [UnhandledExeption] // handles any internal server error exeptions
     public class BooksController : ApiController
     {
-        private BookDAO _bookDAO = new BookDAO();
+        private BookDAO _bookDAO;
 
-        // GET: api/Authors
-        public IQueryable<BookDTO> GetBooks()
+        public BooksController()
         {
-            return _bookDAO.GetAllBooks();
+            BookDAO = new BookDAO();
         }
 
-        // GET: api/Books/5
+        public BookDAO BookDAO
+        {
+            get
+            {
+                return _bookDAO;
+            }
+            private set
+            {
+                _bookDAO = value;
+            }
+        }
+
+        // GET: api/Books
+        [HttpGet]
+        [Route("")]
+        public IQueryable<BookDTO> GetBooks()
+        {
+            return BookDAO.GetAllBooks();
+        }
+
+        // GET: api/Books/{id}
+        [HttpGet]
+        [Route("{id}", Name = "GetBookById")]
         [ResponseType(typeof(BookDetailsDTO))]
         public async Task<IHttpActionResult> GetBook(int Id)
         {
-            BookDetailsDTO book = await _bookDAO.GetBookAsync(Id);
+            BookDetailsDTO book = await BookDAO.GetBookAsync(Id);
             if (book == null)
                 return NotFound();
 
             return Ok(book);
         }
 
-        // POST: api/Authors
-        [ResponseType(typeof(BookDetailsDTO))]
+        // POST: api/Books
+        [HttpPost]
+        [Route("")]
         public async Task<IHttpActionResult> PostBook(BookCreateDTO bookModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             // create new author and return results
-            BookDetailsDTO newBook = await _bookDAO.AddBook(bookModel);
-            return CreatedAtRoute("DefaultApi", new { id = newBook.Id }, newBook);
+            BookDetailsDTO newBook = await BookDAO.AddBook(bookModel);
+            return CreatedAtRoute("GetBookById", new { id = newBook.Id }, newBook);
         }
 
 
-        // PUT: api/Authors/5
-        [ResponseType(typeof(void))]
+        // PUT: api/Books/{id}
+        [HttpPut]
+        [Route("{id}")]
         public async Task<IHttpActionResult> PutAuthor(int id, BookUpdateDTO bookUpdate)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // update author and get results
-            var authorResults = await _bookDAO.UpdateBookAsync(id, bookUpdate);
+            // update book and get results
+            var authorResults = await BookDAO.UpdateBookAsync(id, bookUpdate);
             if (authorResults == null) // author not found
+                return NotFound();
+
+            return Ok(authorResults);
+        }
+
+        // DELETE: api/Books/{id}
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IHttpActionResult> DeleteAuthor(int id)
+        {
+            // delete author from the database
+            bool results = await BookDAO.DeleteBookAsync(id);
+            if (!results) // author was not found to delete
                 return NotFound();
 
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // DELETE: api/Authors/5
-        [ResponseType(typeof(BookDetailsDTO))]
-        public async Task<IHttpActionResult> DeleteAuthor(int id)
-        {
-            // delete author from the database
-            var author = await _bookDAO.DeleteBookAsync(id);
-            if (author == null) // author was not found to delete
-                return NotFound();
-
-            return Ok(author);
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
-                _bookDAO.Dispose();
-            }
+                BookDAO.Dispose();
+
             base.Dispose(disposing);
         }
     }

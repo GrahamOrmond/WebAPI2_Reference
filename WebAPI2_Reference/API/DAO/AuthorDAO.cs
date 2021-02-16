@@ -84,23 +84,17 @@ namespace WebAPI2_Reference.API.DAO
             };
         }
 
-        public async Task<AuthorDetailsDTO> DeleteAuthorAsync(int id)
+        public async Task<bool> DeleteAuthorAsync(int id)
         {
             // get the author from the database
             Author author = await _db.Authors.FindAsync(id);
             if (author == null) // author not found
-                return null;
+                return false;
 
             // delete the author from the database
             _db.Authors.Remove(author);
-            await _db.SaveChangesAsync();
 
-            // return details of the author deleted
-            return new AuthorDetailsDTO()
-            {
-                Id = author.Id,
-                Name = author.Name
-            };
+            return await _db.SaveChangesAsync() > 0; // return delete results
         }
 
         private bool AuthorExists(int id)

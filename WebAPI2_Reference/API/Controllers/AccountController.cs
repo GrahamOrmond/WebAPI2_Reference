@@ -12,6 +12,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
+using WebAPI2_Reference.API.Attributes;
 using WebAPI2_Reference.API.Models;
 using WebAPI2_Reference.API.Providers;
 using WebAPI2_Reference.API.Results;
@@ -21,6 +22,7 @@ namespace WebAPI2_Reference.API.Controllers
 {
     [Authorize]
     [RoutePrefix("api/Account")]
+    [UnhandledExeption] // handles any internal server error exeptions
     public class AccountController : ApiController
     {
         private const string LocalLoginProvider = "Local";

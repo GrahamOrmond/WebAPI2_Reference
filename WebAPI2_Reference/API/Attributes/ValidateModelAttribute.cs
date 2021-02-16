@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 
-namespace WebAPI2_Reference.API.Filters
+namespace WebAPI2_Reference.API.Attributes
 {
     public class ValidateModelAttribute : ActionFilterAttribute
     {

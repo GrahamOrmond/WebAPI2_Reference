@@ -191,8 +191,9 @@
     <Compile Include="API\DAO\RefreshTokenDAO.cs" />
     <Compile Include="API\DTO\AuthorDTO.cs" />
     <Compile Include="API\DTO\BookDTO.cs" />
-    <Compile Include="API\Filters\RequireHttpsAttribute.cs" />
-    <Compile Include="API\Filters\ValidateModelAttribute.cs" />
+    <Compile Include="API\Attributes\GlobalExeptionAttribute.cs" />
+    <Compile Include="API\Attributes\RequireHttpsAttribute.cs" />
+    <Compile Include="API\Attributes\ValidateModelAttribute.cs" />
     <Compile Include="API\Logging\ThrottleLogger.cs" />
     <Compile Include="API\Models\AccountAPIViewModels.cs" />
     <Compile Include="API\Models\AccountBindingModels.cs" />

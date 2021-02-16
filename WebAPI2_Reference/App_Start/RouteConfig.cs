@@ -12,6 +12,7 @@ namespace WebAPI2_Reference
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            routes.MapMvcAttributeRoutes(); // Enables attribute routing
 
             routes.MapRoute(
                 name: "Default",

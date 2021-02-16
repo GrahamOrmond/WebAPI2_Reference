@@ -109,27 +109,16 @@ namespace WebAPI2_Reference.API.DAO
             };
         }
 
-        public async Task<BookDetailsDTO> DeleteBookAsync(int id)
+        public async Task<bool> DeleteBookAsync(int id)
         {
             Book book = await _db.Books.FindAsync(id);
             if (book == null) // author not found
-                return null;
+                return false;
 
             // delete the author from the database
             _db.Books.Remove(book);
-            await _db.SaveChangesAsync();
 
-            // return details of the author deleted
-            _db.Entry(book).Reference(x => x.Author).Load();
-            return new BookDetailsDTO()
-            {
-                Id = book.Id,
-                Genre = book.Genre,
-                Title = book.Title,
-                Year = book.Year,
-                Price = book.Price,
-                AuthorName = book.Author.Name,
-            };
+            return await _db.SaveChangesAsync() > 0; // return delete results
         }
 
         private bool BookExists(int id)
