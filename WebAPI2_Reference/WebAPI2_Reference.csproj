@@ -58,6 +58,9 @@
     <Reference Include="System.Web.Http.Owin, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Owin.5.2.7\lib\net45\System.Web.Http.Owin.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Http.Tracing, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Tracing.5.2.7\lib\net45\System.Web.Http.Tracing.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -104,6 +107,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="WebApiThrottle, Version=1.5.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebApiThrottle.1.5.4\lib\net45\WebApiThrottle.dll</HintPath>
     </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
@@ -187,6 +193,7 @@
     <Compile Include="API\DTO\BookDTO.cs" />
     <Compile Include="API\Filters\RequireHttpsAttribute.cs" />
     <Compile Include="API\Filters\ValidateModelAttribute.cs" />
+    <Compile Include="API\Logging\ThrottleLogger.cs" />
     <Compile Include="API\Models\AccountAPIViewModels.cs" />
     <Compile Include="API\Models\AccountBindingModels.cs" />
     <Compile Include="API\Providers\ApplicationOAuthProvider.cs" />

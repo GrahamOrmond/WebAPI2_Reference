@@ -1,8 +1,8 @@
-﻿using Microsoft.Owin.Security.OAuth;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using WebAPI2_Reference.API.Logging;
+using Microsoft.Owin.Security.OAuth;
 using System.Web.Http;
+using System.Web.Http.Tracing;
+using WebApiThrottle;
 
 namespace WebAPI2_Reference
 {
@@ -32,9 +32,30 @@ namespace WebAPI2_Reference
             // Remove the XML formatter
             config.Formatters.Remove(config.Formatters.XmlFormatter);
 
+            // serialize all request paramaters to CamelCase
+            config.Formatters.JsonFormatter.SerializerSettings.ContractResolver =
+                new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
+            config.Formatters.JsonFormatter.UseDataContractJsonSerializer = false;
+
             // enable tracing
-            //config.EnableSystemDiagnosticsTracing();
+            var traceWriter = new SystemDiagnosticsTraceWriter()
+            {
+                IsVerbose = true
+            };
+            config.Services.Replace(typeof(ITraceWriter), traceWriter);
+            config.EnableSystemDiagnosticsTracing();
+
+            // add rate limiting
+            config.MessageHandlers.Add(new ThrottlingHandler()
+            {
+                Policy = new ThrottlePolicy(perMinute: 100)
+                {
+                    IpThrottling = true,
+                    ClientThrottling = true,
+                },
+                Repository = new CacheRepository(),
+                Logger = new ThrottleLogger(traceWriter)
+            });
         }
     }
 }
-

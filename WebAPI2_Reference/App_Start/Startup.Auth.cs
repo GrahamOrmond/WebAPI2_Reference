@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -8,6 +9,7 @@ using Microsoft.Owin.Security.OAuth;
 using Owin;
 using WebAPI2_Reference.API.Providers;
 using WebAPI2_Reference.Models;
+using WebApiThrottle;
 
 namespace WebAPI2_Reference
 {
@@ -67,28 +69,45 @@ namespace WebAPI2_Reference
                 RefreshTokenProvider = new ApplicationRefreshProvider() // access to refresh token
             };
 
+            //throtting middleware
+            app.Use(typeof(ThrottlingMiddleware),
+                new MiddlewareThrottlingPolicy(),
+                new PolicyCacheRepository(),
+                new CacheRepository(),
+                null,
+                null);
+
             // Enable the application to use bearer tokens to authenticate users
             app.UseOAuthBearerTokens(OAuthOptions);
+        }
+    }
 
+    /*
+     *  CLASS USED TO SET THE THROTTLE SETTINGS
+     */
+    public class MiddlewareThrottlingPolicy : ThrottlePolicy
+    {
+        public MiddlewareThrottlingPolicy()
+        {
+            // throttle settings
+            IpThrottling = true;
+            ClientThrottling = true;
+            EndpointThrottling = true;
+           
+            // set the throttle limits
+            RateLimits policySettings = new RateLimits
+            {
+                PerMinute = 1,
+                PerHour = 30,
+                PerDay = 300,
+                PerWeek = 1500
+            };
 
-            // Uncomment the following lines to enable logging in with third party login providers
-            //app.UseMicrosoftAccountAuthentication(
-            //    clientId: "",
-            //    clientSecret: "");
-
-            //app.UseTwitterAuthentication(
-            //   consumerKey: "",
-            //   consumerSecret: "");
-
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
-
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            //Add the endpoints that get throttling
+            EndpointRules = new Dictionary<string, RateLimits>
+            {
+                { "/Oauth/Token", policySettings }
+            };
         }
     }
 }
