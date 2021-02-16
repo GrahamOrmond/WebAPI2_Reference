@@ -6,9 +6,9 @@ using System.Web;
 using WebAPI2_Reference.Data_Models;
 using WebAPI2_Reference.Models;
 
-namespace WebAPI2_Reference.API.DAO
+namespace WebAPI2_Reference.API.Dao
 {
-    public static class RefreshTokenDAO
+    public static class RefreshTokenDao
     {
         public static async Task<bool> AddRefreshToken(RefreshToken token)
         {

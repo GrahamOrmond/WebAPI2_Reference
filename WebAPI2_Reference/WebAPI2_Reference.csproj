@@ -186,11 +186,12 @@
     <Compile Include="API\Controllers\AccountController.cs" />
     <Compile Include="API\Controllers\AuthorsController.cs" />
     <Compile Include="API\Controllers\BooksController.cs" />
-    <Compile Include="API\DAO\AuthorDAO.cs" />
-    <Compile Include="API\DAO\BookDAO.cs" />
-    <Compile Include="API\DAO\RefreshTokenDAO.cs" />
-    <Compile Include="API\DTO\AuthorDTO.cs" />
-    <Compile Include="API\DTO\BookDTO.cs" />
+    <Compile Include="API\Dao\AuthorDao.cs" />
+    <Compile Include="API\Dao\BaseDao.cs" />
+    <Compile Include="API\Dao\BookDao.cs" />
+    <Compile Include="API\Dao\RefreshTokenDao.cs" />
+    <Compile Include="API\Dto\AuthorDto.cs" />
+    <Compile Include="API\Dto\BookDto.cs" />
     <Compile Include="API\Attributes\GlobalExeptionAttribute.cs" />
     <Compile Include="API\Attributes\RequireHttpsAttribute.cs" />
     <Compile Include="API\Attributes\ValidateModelAttribute.cs" />

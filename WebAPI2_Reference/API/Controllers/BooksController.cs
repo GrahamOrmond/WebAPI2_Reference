@@ -2,25 +2,26 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using WebAPI2_Reference.API.DAO;
-using WebAPI2_Reference.API.DTO;
+using WebAPI2_Reference.API.Dao;
+using WebAPI2_Reference.API.Dto;
 using System.Net;
 using WebAPI2_Reference.API.Attributes;
 
 namespace WebAPI2_Reference.API.Controllers
 {
     [Authorize]
+    [RoutePrefix("api/Books")]
     [UnhandledExeption] // handles any internal server error exeptions
     public class BooksController : ApiController
     {
-        private BookDAO _bookDAO;
+        private BookDao _bookDAO;
 
         public BooksController()
         {
-            BookDAO = new BookDAO();
+            BookDAO = new BookDao();
         }
 
-        public BookDAO BookDAO
+        public BookDao BookDAO
         {
             get
             {
@@ -35,7 +36,7 @@ namespace WebAPI2_Reference.API.Controllers
         // GET: api/Books
         [HttpGet]
         [Route("")]
-        public IQueryable<BookDTO> GetBooks()
+        public IQueryable<BookDto> GetBooks()
         {
             return BookDAO.GetAllBooks();
         }
@@ -43,10 +44,10 @@ namespace WebAPI2_Reference.API.Controllers
         // GET: api/Books/{id}
         [HttpGet]
         [Route("{id}", Name = "GetBookById")]
-        [ResponseType(typeof(BookDetailsDTO))]
+        [ResponseType(typeof(BookDetailsDto))]
         public async Task<IHttpActionResult> GetBook(int Id)
         {
-            BookDetailsDTO book = await BookDAO.GetBookAsync(Id);
+            BookDetailsDto book = await BookDAO.GetBookAsync(Id);
             if (book == null)
                 return NotFound();
 
@@ -56,13 +57,13 @@ namespace WebAPI2_Reference.API.Controllers
         // POST: api/Books
         [HttpPost]
         [Route("")]
-        public async Task<IHttpActionResult> PostBook(BookCreateDTO bookModel)
+        public async Task<IHttpActionResult> PostBook(BookCreateDto bookModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             // create new author and return results
-            BookDetailsDTO newBook = await BookDAO.AddBook(bookModel);
+            BookDetailsDto newBook = await BookDAO.AddBook(bookModel);
             return CreatedAtRoute("GetBookById", new { id = newBook.Id }, newBook);
         }
 
@@ -70,7 +71,7 @@ namespace WebAPI2_Reference.API.Controllers
         // PUT: api/Books/{id}
         [HttpPut]
         [Route("{id}")]
-        public async Task<IHttpActionResult> PutAuthor(int id, BookUpdateDTO bookUpdate)
+        public async Task<IHttpActionResult> PutAuthor(int id, BookUpdateDto bookUpdate)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

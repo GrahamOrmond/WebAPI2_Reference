@@ -4,51 +4,52 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebAPI2_Reference.API.Attributes;
-using WebAPI2_Reference.API.DAO;
-using WebAPI2_Reference.API.DTO;
+using WebAPI2_Reference.API.Dao;
+using WebAPI2_Reference.API.Dto;
 
 namespace WebAPI2_Reference.API.Controllers
 {
     [Authorize]
+    [RoutePrefix("api/Authors")]
     [UnhandledExeption] // handles any internal server error exeptions
     public class AuthorsController : ApiController
     {
 
-        private AuthorDAO _authorDAO;
+        private AuthorDao _authorDao;
 
         public AuthorsController()
         {
-            AuthorDAO = new AuthorDAO();
+            AuthorDao = new AuthorDao();
         }
 
-        public AuthorDAO AuthorDAO
+        public AuthorDao AuthorDao
         {
             get
             {
-                return _authorDAO;
+                return _authorDao;
             }
             private set
             {
-                _authorDAO = value;
+                _authorDao = value;
             }
         }
 
         // GET: api/Authors
         [HttpGet]
         [Route("")]
-        public IQueryable<AuthorDetailsDTO> GetAuthors()
+        public IQueryable<AuthorDetailsDto> GetAuthors()
         {
-            var authors = AuthorDAO.GetAllAuthors();
+            var authors = AuthorDao.GetAllAuthors();
             return authors;
         }
 
         // GET: api/Authors/{id}
         [HttpGet]
         [Route("{id}", Name = "GetAuthorById")]
-        [ResponseType(typeof(AuthorDetailsDTO))]
+        [ResponseType(typeof(AuthorDetailsDto))]
         public IHttpActionResult GetAuthor(int id)
         {
-            AuthorDetailsDTO author = AuthorDAO.GetAuthor(id);
+            AuthorDetailsDto author = AuthorDao.GetAuthor(id);
             if (author == null)
                 return NotFound();
 
@@ -58,13 +59,13 @@ namespace WebAPI2_Reference.API.Controllers
         // POST: api/Authors
         [HttpPost]
         [Route("")]
-        public async Task<IHttpActionResult> PostAuthor(AuthorCreateDTO authorModel)
+        public async Task<IHttpActionResult> PostAuthor(AuthorCreateDto authorModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             // create new author and return results
-            AuthorDetailsDTO newAuthor = await AuthorDAO.AddAuthor(authorModel);
+            AuthorDetailsDto newAuthor = await AuthorDao.AddAuthor(authorModel);
             return CreatedAtRoute("GetAuthorById", new { id = newAuthor.Id }, newAuthor);
         }
 
@@ -72,13 +73,13 @@ namespace WebAPI2_Reference.API.Controllers
         // PUT: api/Authors/{id}
         [HttpPut]
         [Route("{id}")]
-        public async Task<IHttpActionResult> PutAuthor(int id, AuthorUpdateDTO authorUpdate)
+        public async Task<IHttpActionResult> PutAuthor(int id, AuthorUpdateDto authorUpdate)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             // update author and get results
-            var authorResults = await AuthorDAO.UpdateAuthorAsync(id, authorUpdate);
+            var authorResults = await AuthorDao.UpdateAuthorAsync(id, authorUpdate);
             if(authorResults == null) // author not found
                 return NotFound();
 
@@ -91,7 +92,7 @@ namespace WebAPI2_Reference.API.Controllers
         public async Task<IHttpActionResult> DeleteAuthor(int id)
         {
             // delete author from the database
-            bool results = await AuthorDAO.DeleteAuthorAsync(id);
+            bool results = await AuthorDao.DeleteAuthorAsync(id);
             if (!results) // author was not found to delete
                 return NotFound();
 
@@ -101,7 +102,7 @@ namespace WebAPI2_Reference.API.Controllers
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-                AuthorDAO.Dispose();
+                AuthorDao.Dispose();
 
             base.Dispose(disposing);
         }

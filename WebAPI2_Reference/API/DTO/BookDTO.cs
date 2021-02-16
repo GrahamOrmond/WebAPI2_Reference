@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace WebAPI2_Reference.API.DTO
+namespace WebAPI2_Reference.API.Dto
 {
-    public class BookResultsDTO
+    public class BookResultsDto
     {
-        public IEnumerable<BookDTO> Books { get; set; }
+        public IEnumerable<BookDto> Books { get; set; }
     }
 
-    public class BookDTO
+    public class BookDto
     {
         public int Id { get; set; }
         [Required]
@@ -16,7 +16,7 @@ namespace WebAPI2_Reference.API.DTO
         public string AuthorName { get; set; }
     }
 
-    public class BookDetailsDTO
+    public class BookDetailsDto
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -24,10 +24,11 @@ namespace WebAPI2_Reference.API.DTO
         public decimal Price { get; set; }
         public string AuthorName { get; set; }
         public string Genre { get; set; }
+        public int AuthorId { get; set; } // Foreign Key
     }
 
 
-    public class BookCreateDTO
+    public class BookCreateDto
     {
         [Required]
         public string Title { get; set; }
@@ -40,7 +41,7 @@ namespace WebAPI2_Reference.API.DTO
         public int AuthorId { get; set; } // Foreign Key
     }
 
-    public class BookUpdateDTO
+    public class BookUpdateDto
     {
         public string Title { get; set; }
         public int Year { get; set; }

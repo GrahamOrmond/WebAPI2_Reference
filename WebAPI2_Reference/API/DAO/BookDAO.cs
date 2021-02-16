@@ -1,26 +1,20 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Data.Entity;
-using WebAPI2_Reference.API.DTO;
-using WebAPI2_Reference.Models;
-using System;
+using WebAPI2_Reference.API.Dto;
 using WebAPI2_Reference.Data_Models;
 using System.Data.Entity.Infrastructure;
+using System.Net;
 
-namespace WebAPI2_Reference.API.DAO
+namespace WebAPI2_Reference.API.Dao
 {
-    public class BookDAO
+    public class BookDao : BaseDao
     {
-        private ApplicationDbContext _db = new ApplicationDbContext();
-        public BookDAO()
-        {
 
-        }
-
-        public IQueryable<BookDTO> GetAllBooks()
+        public IQueryable<BookDto> GetAllBooks()
         {
-            return from b in _db.Books
-                   select new BookDTO()
+            return from b in DbContext.Books
+                   select new BookDto()
                    {
                        Id = b.Id,
                        Title = b.Title,
@@ -28,10 +22,10 @@ namespace WebAPI2_Reference.API.DAO
                    };
         }
 
-        public async Task<BookDetailsDTO> GetBookAsync(int id)
+        public async Task<BookDetailsDto> GetBookAsync(int id)
         {
-            return await _db.Books.Select(b =>
-                new BookDetailsDTO()
+            return await DbContext.Books.Select(b =>
+                new BookDetailsDto()
                 {
                     Id = b.Id,
                     Title = b.Title,
@@ -43,7 +37,7 @@ namespace WebAPI2_Reference.API.DAO
 
         }
 
-        public async Task<BookDetailsDTO> AddBook(BookCreateDTO bookModel)
+        public async Task<BookDetailsDto> AddBook(BookCreateDto bookModel)
         {
             // create new book to save
             Book newBook = new Book()
@@ -56,12 +50,12 @@ namespace WebAPI2_Reference.API.DAO
             };
 
             // save the book to the database
-            _db.Books.Add(newBook);
-            await _db.SaveChangesAsync();
+            DbContext.Books.Add(newBook);
+            await DbContext.SaveChangesAsync();
 
             // load author info and return book details
-            _db.Entry(newBook).Reference(x => x.Author).Load();
-            return new BookDetailsDTO()
+            DbContext.Entry(newBook).Reference(x => x.Author).Load();
+            return new BookDetailsDto()
             {
                 Id = newBook.Id,
                 Genre = newBook.Genre,
@@ -72,11 +66,12 @@ namespace WebAPI2_Reference.API.DAO
             };
         }
 
-        public async Task<BookDetailsDTO> UpdateBookAsync(int id, BookUpdateDTO bookUpdate)
+        public async Task<BookDetailsDto> UpdateBookAsync(int id, BookUpdateDto bookUpdate)
         {
-            var book = _db.Books.SingleOrDefault(a => a.Id == id);
+            var book = DbContext.Books.SingleOrDefault(a => a.Id == id);
             if (book == null) // author not found
-                return null;
+                // throw manual api error with custom message
+                ThrowResponseException(HttpStatusCode.NotFound, "Author Not Found");
 
             // update the author
             book.Title = bookUpdate.Title;
@@ -84,11 +79,11 @@ namespace WebAPI2_Reference.API.DAO
             book.Year = bookUpdate.Year;
             book.Genre = bookUpdate.Genre;
             book.AuthorId = bookUpdate.AuthorId;
-            _db.Entry(book).State = EntityState.Modified;
+            DbContext.Entry(book).State = EntityState.Modified;
 
             try // try to save changes
             {
-                await _db.SaveChangesAsync();
+                await DbContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException) // failed to save changes
             {
@@ -96,9 +91,9 @@ namespace WebAPI2_Reference.API.DAO
             }
 
             // load author info and return book details
-            _db.Entry(book).Reference(x => x.Author).Load();
+            DbContext.Entry(book).Reference(x => x.Author).Load();
             // return new instance of author details
-            return new BookDetailsDTO()
+            return new BookDetailsDto()
             {
                 Id = book.Id,
                 Genre = book.Genre,
@@ -111,26 +106,20 @@ namespace WebAPI2_Reference.API.DAO
 
         public async Task<bool> DeleteBookAsync(int id)
         {
-            Book book = await _db.Books.FindAsync(id);
+            Book book = await DbContext.Books.FindAsync(id);
             if (book == null) // author not found
-                return false;
+                // throw manual api error with custom message
+                ThrowResponseException(HttpStatusCode.NotFound, "Author Not Found");
 
             // delete the author from the database
-            _db.Books.Remove(book);
+            DbContext.Books.Remove(book);
 
-            return await _db.SaveChangesAsync() > 0; // return delete results
+            return await DbContext.SaveChangesAsync() > 0; // return delete results
         }
 
         private bool BookExists(int id)
         {
-            return _db.Books.Count(e => e.Id == id) > 0;
+            return DbContext.Books.Count(e => e.Id == id) > 0;
         }
-
-        internal void Dispose()
-        {
-            _db.Dispose();
-        }
-
-
     }
 }

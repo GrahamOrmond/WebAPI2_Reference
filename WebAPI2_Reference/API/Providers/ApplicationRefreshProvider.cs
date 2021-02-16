@@ -9,7 +9,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using WebAPI2_Reference.API.DAO;
+using WebAPI2_Reference.API.Dao;
 using WebAPI2_Reference.Data_Models;
 
 namespace WebAPI2_Reference.API.Providers
@@ -42,7 +42,7 @@ namespace WebAPI2_Reference.API.Providers
             context.Ticket.Properties.ExpiresUtc = token.ExpiresUtc;
 
             // save the refresh token to the database
-            var results = await RefreshTokenDAO.AddRefreshToken(token);
+            var results = await RefreshTokenDao.AddRefreshToken(token);
             if (results) 
                 context.SetToken(refreshToken); // set the context token
         }
@@ -51,12 +51,12 @@ namespace WebAPI2_Reference.API.Providers
         {
             // get the token from the database
             var hashedToken = ComputeHash(context.Token); // hash the context token
-            var refreshToken = await RefreshTokenDAO
+            var refreshToken = await RefreshTokenDao
                 .FindRefreshToken(hashedToken); // search by hash
             if (refreshToken != null) // token found
             {
                 context.DeserializeTicket(refreshToken.ProtectedTicket); // set the ticket
-                await RefreshTokenDAO.RemoveRefreshToken(hashedToken); // remove old refresh token
+                await RefreshTokenDao.RemoveRefreshToken(hashedToken); // remove old refresh token
             }
         }
 
