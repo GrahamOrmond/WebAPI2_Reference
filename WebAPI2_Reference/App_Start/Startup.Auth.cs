@@ -18,6 +18,7 @@ namespace WebAPI2_Reference
         public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
 
         public static string PublicClientId { get; private set; }
+        public static string ClientSecret { get; private set; }
 
         // get private token settings
         private static int TokenExpireTimeMinutes = Convert.ToInt32(ConfigurationManager.AppSettings["Token:TokenExpireTimeMinutes"]);
@@ -45,7 +46,7 @@ namespace WebAPI2_Reference
                         validateInterval: TimeSpan.FromMinutes(30),
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
                 }
-            });            
+            });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
             // Enables the application to temporarily store user information when they are verifying the second factor in the two-factor authentication process.
@@ -61,12 +62,13 @@ namespace WebAPI2_Reference
             PublicClientId = "self";
             OAuthOptions = new OAuthAuthorizationServerOptions
             {
-                TokenEndpointPath = new PathString("/api/Token"),
+                TokenEndpointPath = new PathString("/api/token"),
                 Provider = new ApplicationOAuthProvider(PublicClientId),
-                AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
-                AccessTokenExpireTimeSpan = TimeSpan.FromMinutes(TokenExpireTimeMinutes),
+                AuthorizeEndpointPath = new PathString("/api/authorize"),
                 AllowInsecureHttp = true, // for development only
-                RefreshTokenProvider = new ApplicationRefreshProvider() // access to refresh token
+                AccessTokenExpireTimeSpan = TimeSpan.FromMinutes(TokenExpireTimeMinutes),
+                //AuthorizationCodeProvider = new AuthorizationCodeProvider(), // code grant (i couldnt get this to work)
+                RefreshTokenProvider = new ApplicationRefreshProvider(), // access to refresh token
             };
 
             //throtting middleware

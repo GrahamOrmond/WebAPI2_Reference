@@ -1,6 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
@@ -8,6 +14,8 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using WebAPI2_Reference.Models;
 
 namespace WebAPI2_Reference.Controllers
@@ -79,6 +87,11 @@ namespace WebAPI2_Reference.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    // check to see if the url is for code grant
+                    if(returnUrl != null && returnUrl.Contains("/api/authorize"))
+                        return Redirect(returnUrl);
+
+                    // redirect to local always unless code grant
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -315,6 +328,47 @@ namespace WebAPI2_Reference.Controllers
                 return View("Error");
             }
             return RedirectToAction("VerifyCode", new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
+        }
+
+        // GET api/Account/AuthorizationCodeCallback
+        // used to test the code grant call back and access the access tokens
+        [AllowAnonymous]
+        public async Task<ActionResult> AuthorizationCodeCallback()
+        {
+            // received authorization code from oauth server
+            string[] codes = Request.Params.GetValues("code");
+            var authorizationCode = "";
+            if (codes.Length > 0)
+                authorizationCode = codes[0];
+
+            string AccessBody = "client_id={0}&code={1}&grant_type=code&redirect_uri={2}";
+            var accessTokenRequestBody = string.Format(AccessBody, "self", authorizationCode, WebUtility.UrlEncode("http://localhost:49686/account/AuthorizationCodeCallback"));
+            var request = (HttpWebRequest)WebRequest.Create("http://localhost:49686/api/Token");
+            request.Method = "POST";
+            request.Accept = "application/json";
+            request.ContentType = "application/x-www-form-urlencoded";
+            request.ContentLength = accessTokenRequestBody.Length;
+
+            using (Stream requestStream = request.GetRequestStream())
+            {
+                StreamWriter writer = new StreamWriter(requestStream);
+                writer.Write(accessTokenRequestBody);
+                writer.Close();
+            }
+
+            var response = (HttpWebResponse)request.GetResponse();
+
+            using (Stream responseStream = response.GetResponseStream())
+            {
+                var reader = new StreamReader(responseStream);
+                string json = reader.ReadToEnd();
+                reader.Close();
+                var tokens = JsonConvert.DeserializeObject(json, typeof(JObject));
+                int i = 1;
+            }
+
+            //redirect back to the view which required authentication
+            return RedirectToAction("Index", "Home");
         }
 
         //

@@ -4,6 +4,7 @@ using System.Web.Http;
 using System.Web.Http.Tracing;
 using WebApiThrottle;
 using WebAPI2_Reference.API.Attributes;
+using Microsoft.AspNet.Identity;
 
 namespace WebAPI2_Reference
 {
@@ -28,7 +29,7 @@ namespace WebAPI2_Reference
             );
 
             // Enforce HTTPS
-            config.Filters.Add(new RequireHttpsAttribute());
+            //config.Filters.Add(new RequireHttpsAttribute());
 
             // Remove the XML formatter
             config.Formatters.Remove(config.Formatters.XmlFormatter);
